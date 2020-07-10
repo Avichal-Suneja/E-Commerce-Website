@@ -1,0 +1,162 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Home</title>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/froala-design-blocks/2.0.0/css/froala_blocks.min.css">
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <link href="{% static "css/background.css" %}" rel="stylesheet">
+
+    <script type="text/javascript">
+        var user = '{{request.user}}'
+
+        function getToken(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getToken('csrftoken');
+
+    function getCookie(name) {
+      var cookieArr = document.cookie.split(";");
+
+      for(var i=0; i<cookieArr.length; i++) {
+        var cookiePair = cookieArr[i].split("=");
+
+        if(name==cookiePair[0].trim()) {
+          return decodeURIComponent(cookiePair[1]);
+        }
+      }
+      return null;
+    }
+
+    var cart = JSON.parse(getCookie('cart'))
+    if(cart == undefined) {
+      cart = {}
+      console.log('Cart was created')
+      document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+    }
+    console.log('Cart: ', cart)
+    </script>
+  </head>
+
+  <body>
+
+    <header class="bg-dark">
+  <div class="container">
+    <nav class="navbar navbar-expand-md no-gutters">
+      <div class="col-3 text-left">
+        <a href="cart">
+          <img src="{% static 'images/cart-image.png' %}" height="80" width="80" alt="image">
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{cartItems}}</p>
+        </a>
+      </div>
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse-4" aria-controls="navbarNav15" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse navbar-collapse-4 justify-content-center col-md-6" id="navbarNav15">
+        <ul class="navbar-nav justify-content-center">
+          <li class="nav-item active">
+            <a class="nav-link" href="">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Pricing</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Team</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Contact</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="collapse navbar-collapse navbar-collapse-4">
+        <ul class="navbar-nav ml-auto justify-content-end">
+          <li class="nav-item">
+            <a class="nav-link" href="">Log In</a>
+          </li>
+        </ul>
+
+        <a class="btn btn-primary ml-md-3" href="">Register</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+
+
+<section class="text-gray-700 body-font">
+  <div class="container px-5 py-24 mx-auto">
+    <div class="flex flex-wrap -m-4">
+
+      {% for product in products %}
+      <div class="lg:w-1/4 md:w-1/2 p-4 w-full">
+        <a class="block relative h-48 rounded overflow-hidden">
+          <img alt="ecommerce" class="object-cover object-center w-full h-full block" src="{{product.imageURL}}"
+           style="border:1px solid orange; border-radius:8px;">
+        </a>
+        <div class="mt-4">
+          <h2 class="text-gray-900 title-font text-lg font-medium">{{product.name}}</h2>
+          <p class="mt-1">${{product.price|floatformat:2}}</p>
+          <button data-product="{{product.id}}" data-action="add" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full update-cart">Add to cart </button>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+</section>
+
+<footer class="fdb-block footer-small bg-dark">
+  <div class="container">
+    <div class="row text-center align-items-center">
+      <div class="col">
+        <ul class="nav justify-content-center">
+          <li class="nav-item">
+            <a class="nav-link active" href="">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Privacy Policy</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Terms</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">About</a>
+          </li>
+        </ul>
+
+        <p class="h5 mt-5">© 2013-2020 ShopMart</p>
+      </div>
+    </div>
+  </div>
+</footer>
+<script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+  </body>
+</html>

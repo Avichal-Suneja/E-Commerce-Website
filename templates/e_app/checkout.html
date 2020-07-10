@@ -1,0 +1,344 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Checkout</title>
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/froala-design-blocks/2.0.0/css/froala_blocks.min.css">
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+
+
+    <script type="text/javascript">
+        var user = '{{request.user}}'
+
+        function getToken(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getToken('csrftoken');
+    function getCookie(name) {
+      var cookieArr = document.cookie.split(";");
+
+      for(var i=0; i<cookieArr.length; i++) {
+        var cookiePair = cookieArr[i].split("=");
+
+        if(name==cookiePair[0].trim()) {
+          return decodeURIComponent(cookiePair[1]);
+        }
+      }
+      return null;
+    }
+
+    var cart = JSON.parse(getCookie('cart'))
+    if(cart == undefined) {
+      cart = {}
+      console.log('Cart was created')
+      document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+    }
+    console.log('Cart: ', cart)
+    </script>
+</head>
+<body>
+<header class="bg-dark">
+  <div class="container">
+    <nav class="navbar navbar-expand-md no-gutters">
+      <div class="col-3 text-left">
+        <a href="cart">
+          <img src="{% static 'images/cart-image.png' %}" height="80" width="80" alt="image">
+        </a><p>{{cartItems}}</p>
+      </div>
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse-4" aria-controls="navbarNav15" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse navbar-collapse-4 justify-content-center col-md-6" id="navbarNav15">
+        <ul class="navbar-nav justify-content-center">
+          <li class="nav-item active">
+            <a class="nav-link" href="home">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Pricing</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Team</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Contact</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="collapse navbar-collapse navbar-collapse-4">
+        <ul class="navbar-nav ml-auto justify-content-end">
+          <li class="nav-item">
+            <a class="nav-link" href="">Log In</a>
+          </li>
+        </ul>
+
+        <a class="btn btn-primary ml-md-3" href="">Register</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+
+<section class="fdb-block">
+  <div class="container">
+
+    <div class="row-70"></div>
+    <div class="row">
+      <div class="col-12 col-md-8 col-lg m-auto">
+        <form class="w-full max-w-lg" id='form'>
+    <div class="flex flex-wrap -mx-3 mb-6" id="user-info">
+      <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+           Name
+        </label>
+        <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" id="grid-first-name" type="text" name="name" >
+
+      </div>
+      <div class="w-full md:w-1/2 px-3">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-last-name">
+          email
+        </label>
+        <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-last-name" type="email" name="email" >
+      </div>
+    </div>
+    <div id="shipping-info">
+    <div class="flex flex-wrap -mx-3 mb-6">
+      <div class="w-full px-3">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" >
+          Shipping Address
+        </label>
+        <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"  type="text" name="address" >
+      </div>
+    </div>
+    <div class="flex flex-wrap -mx-3 mb-2">
+      <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-city">
+          City
+        </label>
+        <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" type="text" name="city" >
+      </div>
+      <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-zip">
+          State
+        </label>
+        <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"  type="text" name="zip" >
+      </div>
+      <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-zip">
+          Zip
+        </label>
+        <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"  type="text" name="state" >
+      </div>
+    </div>
+  </div>
+    <br><br>
+    <button id='form-button' type='submit' class="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded">
+      Proceed to Pay
+    </button>
+  </form>
+  <div id="payment-info" class="hidden">
+     <h2 style="font-size: 30px;"> <b> Payment Options </b></h2><br>
+      <div id="paypal-button-container"></div>
+
+   </div>
+      </div>
+
+      <div class="col-12 col-md-8 col-lg pt-5 m-auto pt-lg-0">
+
+
+        <table class="table-auto">
+    <thead>
+      <tr class="bg-gray-300">
+        <th class="px-16 py-2"></th>
+        <th class="px-16 py-2">Product</th>
+        <th class="px-16 py-2">Quantity</th>
+        <th class="px-16 py-2">Cost</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr class="bg-orange-200">
+        <td class="border px-4 py-4"><img src="{{item.product.imageURL}}" alt ="image" width="80" height="80"></img></td>
+        <td class="border px-4 py-4">{{item.product.name}}</td>
+        <td class="border px-4 py-4">{{item.quantity}}</td>
+        <td class="border px-4 py-4">${{item.get_total|floatformat:2}}</td>
+      </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+  <br>
+  <h2 style="font-size: 30px;"> <b><center>Grand Total: ${{order.get_cart_total|floatformat:2}}</center><b></h2>
+  <br><br><br><br>
+
+
+  </div>
+    </div>
+  </div>
+</section>
+
+<footer class="fdb-block footer-small bg-dark">
+  <div class="container">
+    <div class="row text-center align-items-center">
+      <div class="col">
+        <ul class="nav justify-content-center">
+          <li class="nav-item">
+            <a class="nav-link active" href="">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Privacy Policy</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Terms</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">About</a>
+          </li>
+        </ul>
+
+        <p class="h5 mt-5">© 2013-2020 ShopMart</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+ <script src="https://www.paypal.com/sdk/js?client-id=AatjvW4hIEbWZ-9p5m883o1hlXFncmiao6OxD64lysRQeie6dvkKJBUOn4O3hc9TaN7d5fkuQjvntiVh&currency=USD"></script>
+
+ <script>
+    var total = '{{order.get_cart_total|floatformat:2}}'
+    // Render the PayPal button into #paypal-button-container
+    paypal.Buttons({
+
+        // Set up the transaction
+
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: parseFloat(total).toFixed(2)
+                    }
+                }]
+            });
+        },
+
+        // Finalize the transaction
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+              submitFormData()
+            });
+        }
+
+
+    }).render('#paypal-button-container');
+</script>
+<script type="text/javascript">
+      var shipping = '{{order.shipping}}'
+
+      if (shipping == 'False'){
+        document.getElementById('shipping-info').innerHTML = ''
+      }
+
+      if(user != 'AnonymousUser'){
+        document.getElementById('user-info').innerHTML=''
+      }
+
+      if (shipping == 'False' && user!= 'AnonymousUser'){
+        document.getElementById('form').classList.add("hidden");
+        document.getElementById('payment-info').classList.remove("hidden");
+      }
+
+      var form = document.getElementById('form')
+      form.addEventListener('submit', function(e){
+        e.preventDefault()
+        console.log('Form Submitted...')
+        document.getElementById('form-button').classList.add("hidden");
+        document.getElementById('payment-info').classList.remove("hidden");
+      })
+
+      /*document.getElementById('make-payment').addEventListener('click', function(e){
+        submitFormData()
+      })
+      */
+    function submitFormData(){
+      console.log('Payment button clicked')
+
+      var userFormData={
+        'name':null,
+        'email':null,
+        'total':total,
+
+      }
+
+      var shippingInfo={
+        'address':null,
+        'city':null,
+        'state':null,
+        'zip':null,
+
+      }
+
+      if(shipping != 'False'){
+        shippingInfo.address = form.address.value
+        shippingInfo.city = form.city.value
+        shippingInfo.state = form.state.value
+        shippingInfo.zip = form.zip.value
+      }
+
+      if(user == 'AnonymousUser'){
+        userFormData.name = form.name.value
+        userFormData.email = form.email.value
+      }
+
+
+      var url = "/process_order/"
+      fetch(url, {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'X-CSRFToken':csrftoken,
+        },
+        body:JSON.stringify({'form':userFormData, 'shipping':shippingInfo}),
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Success: ', data);
+        alert('Transaction Completed');
+
+        cart = {}
+        document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+
+        window.location.href = "{% url 'home' %}"
+      })
+    }
+</script>
+
+<script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+
+</body>
+</html>

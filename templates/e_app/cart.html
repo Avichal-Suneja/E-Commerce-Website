@@ -1,0 +1,196 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Cart</title>
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/froala-design-blocks/2.0.0/css/froala_blocks.min.css">
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+		<link href="{% static "css/cart.css" %}" rel="stylesheet">
+
+		<script type="text/javascript">
+        var user = '{{request.user}}'
+
+        function getToken(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getToken('csrftoken');
+		function getCookie(name) {
+      var cookieArr = document.cookie.split(";");
+
+      for(var i=0; i<cookieArr.length; i++) {
+        var cookiePair = cookieArr[i].split("=");
+
+        if(name==cookiePair[0].trim()) {
+          return decodeURIComponent(cookiePair[1]);
+        }
+      }
+      return null;
+    }
+
+    var cart = JSON.parse(getCookie('cart'))
+    if(cart == undefined) {
+      cart = {}
+      console.log('Cart was created')
+      document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+    }
+    console.log('Cart: ', cart)
+    </script>
+</head>
+<body>
+
+<header class="bg-dark">
+  <div class="container">
+    <nav class="navbar navbar-expand-md no-gutters">
+      <div class="col-3 text-left">
+        <a href="cart">
+          <img src="{% static 'images/cart-image.png' %}" height="80" width="80" alt="image">
+        </a><p>{{cartItems}}</p>
+      </div>
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse-4" aria-controls="navbarNav15" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse navbar-collapse-4 justify-content-center col-md-6" id="navbarNav15">
+        <ul class="navbar-nav justify-content-center">
+          <li class="nav-item active">
+            <a class="nav-link" href="home">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Pricing</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Team</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Contact</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="collapse navbar-collapse navbar-collapse-4">
+        <ul class="navbar-nav ml-auto justify-content-end">
+          <li class="nav-item">
+            <a class="nav-link" href="">Log In</a>
+          </li>
+        </ul>
+
+        <a class="btn btn-primary ml-md-3" href="">Register</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<section class="text-gray-700 body-font">
+  <div class="container px-5 py-24 mx-auto">
+
+     <center><h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Order Summary</h1></center>
+      <br>
+
+    <div class="lg:w-2/3 w-full mx-auto overflow-auto">
+      <table class="table-auto w-full text-left whitespace-no-wrap">
+        <thead>
+          <tr>
+          <th class="px-4 py-3 title-font tracking-wider font-medium text-white-900 text-sm bg-gray-200 rounded-tl rounded-bl"></th>
+            <th class="px-4 py-3 title-font tracking-wider font-large text-gray-900 text-l bg-gray-200">Product</th>
+            <th class="px-4 py-3 title-font tracking-wider font-large text-gray-900 text-m bg-gray-200">Price</th>
+						  <th class="px-4 py-3 title-font tracking-wider font-large text-gray-900 text-m bg-gray-200">Quantity</th>
+							 <th class="px-4 py-3 title-font tracking-wider font-large text-gray-900 text-m bg-gray-200"></th>
+							<th class="px-4 py-3 title-font tracking-wider font-large text-gray-900 text-m bg-gray-200">Total</th>
+
+
+          </tr>
+        </thead>
+        <tbody>
+
+{% for item in items %}
+          <tr>
+						<td class="border-t-2 border-gray-500 px-4 py-3"><img src="{{item.product.imageURL}}" alt ="image" width="80" height="80"></img></td>
+            <td class="border-t-2 border-gray-500 px-4 py-3">{{item.product.name}}</td>
+            <td class="border-t-2 border-gray-500 px-4 py-3">${{item.product.price|floatformat:2}}</td>
+            <td class="border-t-2 border-gray-500 px-4 py-3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{item.quantity}}</td>
+						<td class="border-t-2 border-gray-500 px-4 py-3"><div class="inline-flex">
+  <button data-product="{{item.product.id}}" data-action="add" class="bg-blue-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-2 rounded-l update-cart">
+  +
+  </button>
+  <button data-product="{{item.product.id}}" data-action="remove" class="bg-red-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-2 rounded-r update-cart">
+    -
+  </button>
+</div></td>
+            <td class="border-t-2 border-gray-500 px-4 py-3">${{item.get_total|floatformat:2}}</td>
+          </tr>
+{% endfor %}
+
+<tr>
+	<td class="border-t-2 border-gray-500 px-4 py-3"><img src="" ></img></td>
+	<td class="border-t-2 border-gray-500 px-4 py-3"></td>
+	<td class="border-t-2 border-gray-500 px-4 py-3"></td>
+	<td class="border-t-2 border-gray-500 px-4 py-3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	<td class="border-t-2 border-gray-500 px-4 py-3"></td>
+  <td class="border-t-2 border-gray-500 px-4 py-3">${{order.get_cart_total|floatformat:2}}</td>
+</tr>
+
+
+        </tbody>
+      </table>
+    </div>
+    <div class="flex pl-4 mt-4 lg:w-2/3 w-full mx-auto">
+      <a class="text-indigo-500 inline-flex items-center md:mb-2 lg:mb-0" href="home">Add more items
+        <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+          <path d="M5 12h14M12 5l7 7-7 7"></path>
+        </svg>
+      </a>
+      <button class="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded"><a href="checkout">Proceed</a></button>
+    </div>
+  </div>
+</section>
+<footer class="fdb-block footer-small bg-dark">
+  <div class="container">
+    <div class="row text-center align-items-center">
+      <div class="col">
+        <ul class="nav justify-content-center">
+          <li class="nav-item">
+            <a class="nav-link active" href="">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Privacy Policy</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Terms</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">About</a>
+          </li>
+        </ul>
+
+        <p class="h5 mt-5">© 2013-2020 ShopMart</p>
+      </div>
+    </div>
+  </div>
+</footer>
+<script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+</body>
+</html>
